@@ -2,9 +2,9 @@ package lastfm
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -26,13 +26,11 @@ type WeeklyTrackChart struct {
 	_WeeklyTrackChart `json:"weeklytrackchart,string"`
 }
 
-var (
-	LASTFM_API_KEY   string = os.Getenv("LASTFM_API_KEY")
-	LASTFM_USER_NAME string = os.Getenv("LASTFM_USER_NAME")
-)
-
-func (chart *WeeklyTrackChart) GetTracks(user string) ([]Track, error) {
-	ENDPOINT := "http://ws.audioscrobbler.com/2.0/?method=user.getweeklytrackchart&user=" + user + "&api_key=" + LASTFM_API_KEY + "&format=json&from=1648738800&to=1680274800&limit=5"
+func GetTracks(user string, apikey string) ([]Track, error) {
+	if apikey == "" {
+		return nil, fmt.Errorf("Last.FM API Key is required")
+	}
+	ENDPOINT := "http://ws.audioscrobbler.com/2.0/?method=user.getweeklytrackchart&user=" + user + "&api_key=" + apikey + "&format=json&from=1648738800&to=1680274800&limit=5"
 
 	req, err := http.NewRequest(http.MethodGet, ENDPOINT, nil)
 	if err != nil {
