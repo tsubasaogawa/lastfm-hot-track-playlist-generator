@@ -7,11 +7,12 @@ import (
 )
 
 type Search struct {
-	service    *youtube.Service
-	MaxResults int64
-	Q          string
-	RegionCode string
-	Type       string
+	service         *youtube.Service
+	MaxResults      int64
+	Q               string
+	RegionCode      string
+	Type            string
+	VideoCategoryId string
 }
 
 type SearchResultItem struct {
@@ -21,11 +22,12 @@ type SearchResultItem struct {
 
 func NewSearch(svc *youtube.Service) *Search {
 	return &Search{
-		svc,
-		5,
-		"",
-		"JP",
-		"video",
+		service:         svc,
+		MaxResults:      5,
+		Q:               "",
+		RegionCode:      "JP",
+		Type:            "video",
+		VideoCategoryId: "10", // "Music"
 	}
 }
 
