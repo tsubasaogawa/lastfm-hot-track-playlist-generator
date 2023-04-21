@@ -14,18 +14,19 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	for _, track := range tracks {
-		fmt.Printf("%s - %s\n", track.ArtistName, track.Name)
-	}
 
-	service, err := ytmusic.NewService(os.Getenv("YT_API_KEY"))
+	service, err := ytmusic.NewService("oauth.json")
 	if err != nil {
 		log.Fatalln(err)
 	}
 	search := ytmusic.NewSearch(service)
-	search.Q = "Pixies"
-	searchItems := search.Do()
-	for _, item := range searchItems {
-		fmt.Printf("%s - %s\n", item.Title, item.Id)
+
+	for _, track := range tracks {
+		search.Q = fmt.Sprintf("%s - %s", track.ArtistName, track.Name)
+		searchItem, err := search.Do()
+		if err != nil {
+			log.Fatalln(err)
+		}
+		fmt.Printf("%s - %s (%s)\n", searchItem.Title, searchItem.Artist, searchItem.Id)
 	}
 }
