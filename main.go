@@ -15,7 +15,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	service, err := ytmusic.NewService("oauth.json")
+	service, err := ytmusic.NewService()
 	if err != nil {
 		log.Fatalln(err)
 	}
