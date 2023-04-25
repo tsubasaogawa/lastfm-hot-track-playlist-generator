@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 
 	"golang.org/x/oauth2"
@@ -31,6 +32,10 @@ func NewService() (*youtube.Service, error) {
 	token, err := readSavedToken()
 	if err != nil {
 		token, err = generateToken(config)
+		if err != nil {
+			return nil, err
+		}
+		log.Println("Generated token is saved to " + TOKEN_FILE)
 	}
 
 	ctx := context.Background()
@@ -57,7 +62,7 @@ func readSavedToken() (*oauth2.Token, error) {
 }
 
 func generateToken(c *oauth2.Config) (*oauth2.Token, error) {
-	url := c.AuthCodeURL("test", oauth2.AccessTypeOffline)
+	url := c.AuthCodeURL("test", oauth2.AccessTypeOffline) // FIXME
 	fmt.Printf("Access to the following URL: \n%s\nAuth code is: ", url)
 
 	var s string

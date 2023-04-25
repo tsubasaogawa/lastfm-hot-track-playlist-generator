@@ -14,12 +14,6 @@ type Search struct {
 	VideoCategoryId string
 }
 
-type SearchResultItem struct {
-	Title  string
-	Artist string
-	Id     string
-}
-
 func NewSearch(svc *youtube.Service) *Search {
 	return &Search{
 		service:         svc,
@@ -30,7 +24,7 @@ func NewSearch(svc *youtube.Service) *Search {
 	}
 }
 
-func (s *Search) Do() (*SearchResultItem, error) {
+func (s *Search) Do() (*Track, error) {
 	search := s.service.Search.List([]string{"snippet"}).
 		MaxResults(s.MaxResults).
 		Q(s.Q).
@@ -47,14 +41,14 @@ func (s *Search) Do() (*SearchResultItem, error) {
 		if !s.isArtTrack(item.Snippet) {
 			continue
 		}
-		return &SearchResultItem{
+		return &Track{
 			Title:  item.Snippet.Title,
 			Artist: item.Snippet.ChannelTitle,
 			Id:     item.Id.VideoId,
 		}, nil
 	}
 
-	return &SearchResultItem{
+	return &Track{
 		Title:  resp.Items[0].Snippet.Title,
 		Artist: resp.Items[0].Snippet.ChannelTitle,
 		Id:     resp.Items[0].Id.VideoId,

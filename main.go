@@ -19,8 +19,13 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	search := ytmusic.NewSearch(service)
 
+	playlist, err := ytmusic.NewPlaylist(service, "ogawatest", "this is test", "private")
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	search := ytmusic.NewSearch(service)
 	for _, track := range tracks {
 		search.Q = fmt.Sprintf("%s - %s", track.ArtistName, track.Name)
 		searchItem, err := search.Do()
@@ -28,5 +33,9 @@ func main() {
 			log.Fatalln(err)
 		}
 		fmt.Printf("%s - %s (%s)\n", searchItem.Title, searchItem.Artist, searchItem.Id)
+		err = playlist.AddItem(searchItem)
+		if err != nil {
+			log.Fatalln(err)
+		}
 	}
 }
