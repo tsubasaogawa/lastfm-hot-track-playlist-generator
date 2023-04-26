@@ -26,11 +26,11 @@ type WeeklyTrackChart struct {
 	_WeeklyTrackChart `json:"weeklytrackchart,string"`
 }
 
-func GetTracks(user string, apikey string) ([]Track, error) {
+func GetTracks(user string, apikey string, from int64, to int64) ([]Track, error) {
 	if apikey == "" {
 		return nil, fmt.Errorf("Last.FM API Key is required")
 	}
-	ENDPOINT := "http://ws.audioscrobbler.com/2.0/?method=user.getweeklytrackchart&user=" + user + "&api_key=" + apikey + "&format=json&from=1648738800&to=1680274800&limit=5"
+	ENDPOINT := fmt.Sprintf("http://ws.audioscrobbler.com/2.0/?method=user.getweeklytrackchart&user=%s&api_key=%s&format=json&from=%d&to=%d&limit=5", user, apikey, from, to)
 
 	req, err := http.NewRequest(http.MethodGet, ENDPOINT, nil)
 	if err != nil {
@@ -50,9 +50,6 @@ func GetTracks(user string, apikey string) ([]Track, error) {
 
 	weekly := WeeklyTrackChart{}
 	err = json.Unmarshal([]byte(validJson), &weekly)
-	if err != nil {
-		return nil, err
-	}
 
-	return weekly.Tracks, nil
+	return weekly.Tracks, err
 }

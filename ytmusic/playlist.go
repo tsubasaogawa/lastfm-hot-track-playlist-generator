@@ -14,9 +14,9 @@ type Playlist struct {
 	Id            string
 }
 
-func NewPlaylist(svc *youtube.Service, tt string, desc string, stat string) (*Playlist, error) {
+func NewPlaylist(svc *youtube.Service, tt string, desc string, stat string, dup bool) (*Playlist, error) {
 	plExists, err := exists(svc, tt)
-	if plExists {
+	if plExists && !dup {
 		return nil, fmt.Errorf("Playlist `%s` is already exists", tt)
 	} else if err != nil {
 		return nil, err
@@ -47,17 +47,30 @@ func NewPlaylist(svc *youtube.Service, tt string, desc string, stat string) (*Pl
 }
 
 func exists(svc *youtube.Service, tt string) (bool, error) {
-	list := svc.Playlists.List([]string{"snippet"}).Mine(true)
-	resp, err := list.Do()
-	if err != nil {
-		return false, err
-	}
+	nextTok := ""
 
-	for _, myPlaylist := range resp.Items {
-		if myPlaylist.Snippet.Title == tt {
-			return true, nil
+	for {
+		list := svc.Playlists.List([]string{"snippet"}).
+			Mine(true).
+			PageToken(nextTok)
+
+		resp, err := list.Do()
+		if err != nil {
+			return false, err
+		}
+
+		for _, myPlaylist := range resp.Items {
+			if myPlaylist.Snippet.Title == tt {
+				return true, nil
+			}
+		}
+
+		nextTok = resp.NextPageToken
+		if nextTok == "" {
+			break
 		}
 	}
+
 	return false, nil
 }
 
