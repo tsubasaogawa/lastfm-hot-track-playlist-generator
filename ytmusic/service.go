@@ -3,10 +3,12 @@ package ytmusic
 import (
 	"bufio"
 	"context"
+	"crypto/md5"
 	"encoding/json"
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -18,12 +20,12 @@ const (
 )
 
 func NewService(oauthfile string) (*youtube.Service, error) {
-	oauthjson, err := os.ReadFile(oauthfile)
+	oauth, err := os.ReadFile(oauthfile)
 	if err != nil {
 		return nil, err
 	}
 
-	config, err := google.ConfigFromJSON(oauthjson, youtube.YoutubeScope)
+	config, err := google.ConfigFromJSON(oauth, youtube.YoutubeScope)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +60,8 @@ func readSavedToken() (*oauth2.Token, error) {
 }
 
 func generateToken(c *oauth2.Config) (*oauth2.Token, error) {
-	url := c.AuthCodeURL("test", oauth2.AccessTypeOffline) // FIXME
+	hash := md5.Sum([]byte(time.Now().String()))
+	url := c.AuthCodeURL(string(hash[:]), oauth2.AccessTypeOffline)
 	fmt.Printf("Access to the following URL: \n%s\nAuth code is: ", url)
 
 	var s string

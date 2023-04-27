@@ -26,13 +26,16 @@ type WeeklyTrackChart struct {
 	_WeeklyTrackChart `json:"weeklytrackchart,string"`
 }
 
-func GetTracks(user string, apikey string, from int64, to int64) ([]Track, error) {
+const ENDPOINT_BASE = "http://ws.audioscrobbler.com/2.0/?method=user.getweeklytrackchart"
+
+func GetTracks(user string, apikey string, from int64, to int64, max int) ([]Track, error) {
 	if apikey == "" {
 		return nil, fmt.Errorf("Last.FM API Key is required")
 	}
-	ENDPOINT := fmt.Sprintf("http://ws.audioscrobbler.com/2.0/?method=user.getweeklytrackchart&user=%s&api_key=%s&format=json&from=%d&to=%d&limit=5", user, apikey, from, to)
+	endpoint := fmt.Sprintf("%s&user=%s&api_key=%s&format=json&from=%d&to=%d&limit=%d",
+		ENDPOINT_BASE, user, apikey, from, to, max)
 
-	req, err := http.NewRequest(http.MethodGet, ENDPOINT, nil)
+	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -41,15 +44,18 @@ func GetTracks(user string, apikey string, from int64, to int64) ([]Track, error
 		return nil, err
 	}
 
-	invalidByteJson, err := ioutil.ReadAll(res.Body)
+	invalid, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	validJson := strings.ReplaceAll(string(invalidByteJson), "#text", "text")
+	valid := strings.ReplaceAll(string(invalid), "#text", "text")
 
 	weekly := WeeklyTrackChart{}
-	err = json.Unmarshal([]byte(validJson), &weekly)
+	err = json.Unmarshal([]byte(valid), &weekly)
+	if err != nil {
+		return nil, err
+	}
 
-	return weekly.Tracks, err
+	return weekly.Tracks, nil
 }

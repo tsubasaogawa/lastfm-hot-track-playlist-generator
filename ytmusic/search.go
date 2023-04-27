@@ -9,7 +9,8 @@ import (
 type Search struct {
 	service         *youtube.Service
 	MaxResults      int64
-	Repeats         int
+	MaxSearchVideos int
+	searchCount     int
 	Q               string
 	RegionCode      string
 	VideoCategoryId string
@@ -19,7 +20,8 @@ func NewSearch(svc *youtube.Service) *Search {
 	return &Search{
 		service:         svc,
 		MaxResults:      5,
-		Repeats:         3,
+		MaxSearchVideos: 5,
+		searchCount:     0,
 		Q:               "",
 		RegionCode:      "JP",
 		VideoCategoryId: "10", // "Music"
@@ -27,51 +29,73 @@ func NewSearch(svc *youtube.Service) *Search {
 }
 
 func (s *Search) Do() (*Track, error) {
-	nextTok := ""
-	mostRelatedTrack := Track{}
-	for i := 0; ; i++ {
-		search := s.service.Search.List([]string{"snippet"}).
-			MaxResults(s.MaxResults).
-			Q(s.Q).
-			// FIXME: Error `googleapi: Error 400: Request contains an invalid argument., badRequest` occurs. For me only?
-			// VideoCategoryId(s.VideoCategoryId).
-			RegionCode(s.RegionCode).
-			PageToken(nextTok)
-
-		resp, err := search.Do()
+	tok := ""
+	mostRelatedVideo := Track{}
+	for i := 1; ; i++ {
+		items, nextTok, err := s.listVideos(tok)
 		if err != nil {
 			return nil, err
 		}
-
-		for _, item := range resp.Items {
-			if !s.isArtTrack(item.Snippet) {
-				continue
-			}
-			return &Track{
-				Title:  item.Snippet.Title,
-				Artist: item.Snippet.ChannelTitle,
-				Id:     item.Id.VideoId,
-			}, nil
-		}
-
-		if i == 0 {
-			mostRelatedTrack = Track{
-				Title:  resp.Items[0].Snippet.Title,
-				Artist: resp.Items[0].Snippet.ChannelTitle,
-				Id:     resp.Items[0].Id.VideoId,
+		art := s.chooseArtTrack(items)
+		if art != nil {
+			return art, nil
+		} else if i == 1 {
+			mostRelatedVideo = Track{
+				Title:  items[0].Snippet.Title,
+				Artist: items[0].Snippet.ChannelTitle,
+				Id:     items[0].Id.VideoId,
 			}
 		}
 
-		nextTok = resp.NextPageToken
-		if nextTok == "" {
+		tok = nextTok
+		if tok == "" {
 			break
 		}
 	}
 
 	// when search results are non-art tracks only
-	return &mostRelatedTrack, nil
+	return &mostRelatedVideo, nil
+}
+
+func (s *Search) listVideos(tok string) ([]*youtube.SearchResult, string, error) {
+	print("nextTok = " + tok + "\n")
+	search := s.service.Search.List([]string{"snippet"}).
+		MaxResults(s.MaxResults).
+		Q(s.Q).
+		// FIXME: Error `googleapi: Error 400: Request contains an invalid argument., badRequest` occurs. For me only?
+		// VideoCategoryId(s.VideoCategoryId).
+		RegionCode(s.RegionCode).
+		PageToken(tok)
+
+	resp, err := search.Do()
+	if err != nil {
+		return nil, "", err
+	}
+
+	return resp.Items, resp.NextPageToken, nil
+}
+
+func (s *Search) chooseArtTrack(items []*youtube.SearchResult) *Track {
+	for _, item := range items {
+		s.searchCount++
+		print("Try: " + item.Snippet.Title + "\n")
+		if !s.isArtTrack(item.Snippet) {
+			if s.searchCount <= s.MaxSearchVideos {
+				continue
+			} else {
+				break
+			}
+		}
+		return &Track{
+			Title:  item.Snippet.Title,
+			Artist: item.Snippet.ChannelTitle,
+			Id:     item.Id.VideoId,
+		}
+	}
+	return nil
 }
 
 func (s *Search) isArtTrack(snip *youtube.SearchResultSnippet) bool {
-	return strings.HasSuffix(snip.ChannelTitle, "- Topic") || strings.HasPrefix(snip.Description, "Provided to YouTube")
+	return strings.HasSuffix(snip.ChannelTitle, "- Topic") ||
+		strings.HasPrefix(snip.Description, "Provided to YouTube")
 }
