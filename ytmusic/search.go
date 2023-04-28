@@ -62,8 +62,8 @@ func (s *Search) listVideos(tok string) ([]*youtube.SearchResult, string, error)
 	search := s.service.Search.List([]string{"snippet"}).
 		MaxResults(s.MaxResults).
 		Q(s.Q).
-		// FIXME: Error `googleapi: Error 400: Request contains an invalid argument., badRequest` occurs. For me only?
-		// VideoCategoryId(s.VideoCategoryId).
+		Type("video").
+		VideoCategoryId(s.VideoCategoryId).
 		RegionCode(s.RegionCode).
 		PageToken(tok)
 
