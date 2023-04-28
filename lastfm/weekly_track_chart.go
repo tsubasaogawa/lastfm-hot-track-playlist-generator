@@ -8,16 +8,6 @@ import (
 	"strings"
 )
 
-type Artist struct {
-	ArtistName string `json:"text"`
-}
-
-type Track struct {
-	Artist    `json:"artist,string"`
-	Name      string `json:"name"`
-	Playcount int    `json:"playcount,string"`
-}
-
 type _WeeklyTrackChart struct {
 	Tracks []Track `json:"track,string"`
 }

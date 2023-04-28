@@ -49,7 +49,10 @@ func main() {
 		log.Fatalln(err)
 	}
 	if *dryrun {
-		fmt.Printf("%#v\n", tracks)
+		for _, tr := range tracks {
+			tr.Print()
+			print("\n")
+		}
 		os.Exit(0)
 	}
 
@@ -67,7 +70,7 @@ func main() {
 	search.RegionCode = *region
 	search.MaxSearchVideos = *maxSrchVids
 	for _, track := range tracks {
-		fmt.Printf("%s - %s (%d times)", track.Name, track.ArtistName, track.Playcount)
+		track.Print()
 		search.Q = fmt.Sprintf("%s - %s", track.ArtistName, track.Name)
 		searchItem, err := search.Do()
 		if err != nil {
