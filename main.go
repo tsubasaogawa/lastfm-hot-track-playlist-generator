@@ -7,8 +7,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/tsubasaogawa/lastfm-hot-track-playlist-generator/lastfm"
-	"github.com/tsubasaogawa/lastfm-hot-track-playlist-generator/ytmusic"
+	"github.com/tsubasaogawa/lfm2ytm/lastfm"
+	"github.com/tsubasaogawa/lfm2ytm/ytmusic"
 )
 
 func main() {

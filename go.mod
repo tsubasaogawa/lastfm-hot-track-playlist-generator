@@ -1,4 +1,4 @@
-module github.com/tsubasaogawa/lastfm-hot-track-playlist-generator
+module github.com/tsubasaogawa/lfm2ytm
 
 go 1.18
 

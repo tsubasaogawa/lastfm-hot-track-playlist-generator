@@ -1,4 +1,4 @@
-# lfm2ytm
+# lfm2ytm: YouTube (Music) playlist generator with Last.fm hot tracks
 
 It generates a playlist consisting of hot tracks in Last.fm.
 
