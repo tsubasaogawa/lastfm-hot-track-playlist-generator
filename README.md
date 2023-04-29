@@ -6,6 +6,8 @@ It generates a playlist consisting of hot tracks in Last.fm.
 
 ### My Last.fm hot tracks in 11 July 2017 - 18 July 2017
 
+![lastfm](https://user-images.githubusercontent.com/7788821/235303633-b332787b-4171-49c3-a3ab-8cf6b61b4a1b.png)
+
 ### Run generator
 
 ```
@@ -30,6 +32,7 @@ $ LASTFM_API_KEY=****** ./lfm2ytm \
 
 ### Generated YouTube Music playlist
 
+![ytmusic](https://user-images.githubusercontent.com/7788821/235303635-479550fd-a866-4816-9252-949cd91da8df.png)
 
 ## Install
 
