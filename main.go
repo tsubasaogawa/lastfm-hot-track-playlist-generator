@@ -45,6 +45,9 @@ func main() {
 		str2unixtime(*to),
 		*lfmMaxResults,
 	)
+	if len(tracks) < 1 {
+		err = fmt.Errorf("No tracks found in given date range")
+	}
 	if err != nil {
 		log.Fatalln(err)
 	}
