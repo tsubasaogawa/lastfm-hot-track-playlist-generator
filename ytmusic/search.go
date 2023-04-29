@@ -9,8 +9,7 @@ import (
 type Search struct {
 	service         *youtube.Service
 	MaxResults      int64
-	MaxSearchVideos int
-	searchCount     int
+	MaxTries        int
 	Q               string
 	RegionCode      string
 	VideoCategoryId string
@@ -19,9 +18,8 @@ type Search struct {
 func NewSearch(svc *youtube.Service) *Search {
 	return &Search{
 		service:         svc,
-		MaxResults:      5,
-		MaxSearchVideos: 5,
-		searchCount:     0,
+		MaxResults:      3,
+		MaxTries:        1,
 		Q:               "",
 		RegionCode:      "JP",
 		VideoCategoryId: "10", // "Music"
@@ -31,6 +29,7 @@ func NewSearch(svc *youtube.Service) *Search {
 func (s *Search) Do() (*Track, error) {
 	tok := ""
 	mostRelatedVideo := Track{}
+
 	for i := 1; ; i++ {
 		items, nextTok, err := s.listVideos(tok)
 		if err != nil {
@@ -48,7 +47,7 @@ func (s *Search) Do() (*Track, error) {
 		}
 
 		tok = nextTok
-		if tok == "" {
+		if tok == "" || i >= s.MaxTries {
 			break
 		}
 	}
@@ -58,7 +57,6 @@ func (s *Search) Do() (*Track, error) {
 }
 
 func (s *Search) listVideos(tok string) ([]*youtube.SearchResult, string, error) {
-	print("nextTok = " + tok + "\n")
 	search := s.service.Search.List([]string{"snippet"}).
 		MaxResults(s.MaxResults).
 		Q(s.Q).
@@ -77,14 +75,8 @@ func (s *Search) listVideos(tok string) ([]*youtube.SearchResult, string, error)
 
 func (s *Search) chooseArtTrack(items []*youtube.SearchResult) *Track {
 	for _, item := range items {
-		s.searchCount++
-		print("Try: " + item.Snippet.Title + "\n")
 		if !s.isArtTrack(item.Snippet) {
-			if s.searchCount <= s.MaxSearchVideos {
-				continue
-			} else {
-				break
-			}
+			continue
 		}
 		return &Track{
 			Title:  item.Snippet.Title,

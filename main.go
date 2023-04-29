@@ -22,8 +22,8 @@ func main() {
 		duplicate     = flag.Bool("duplicate", false, "Allow duplicate playlists with the same title")
 		region        = flag.String("region", "JP", "Region code used in YouTube (Music) search")
 		lfmMaxResults = flag.Int("lfmmax", 20, "Max results for Last.fm response")
-		ytmMaxResults = flag.Int64("ytmmax", 5, "Max results for YouTube (Music) response")
-		maxSrchVids   = flag.Int("maxsearchvideos", 5, "Threshold to search an art track video")
+		ytmMaxResults = flag.Int64("ytmmax", 3, "Max results for YouTube (Music) response")
+		maxSearch     = flag.Int("maxsearch", 1, "Threshold tries to search an art track video")
 		dryrun        = flag.Bool("dryrun", false, "Do not generate a playlist but fetch a weekly chart")
 	)
 	flag.Parse()
@@ -68,7 +68,7 @@ func main() {
 
 	search := ytmusic.NewSearch(service)
 	search.RegionCode = *region
-	search.MaxSearchVideos = *maxSrchVids
+	search.MaxTries = *maxSearch
 	for _, track := range tracks {
 		track.Print()
 		search.Q = fmt.Sprintf("%s - %s", track.ArtistName, track.Name)
