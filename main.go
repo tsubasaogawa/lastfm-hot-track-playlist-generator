@@ -38,18 +38,18 @@ func main() {
 	}
 	secretJsonFile := args[0]
 
+	apikey := os.Getenv("LASTFM_API_KEY")
 	tracks, err := lastfm.GetTracks(
 		*user,
-		os.Getenv("LASTFM_API_KEY"),
+		apikey,
 		str2unixtime(*from),
 		str2unixtime(*to),
 		*lfmMaxResults,
 	)
-	if len(tracks) < 1 {
-		err = fmt.Errorf("No tracks found in given date range")
-	}
 	if err != nil {
 		log.Fatalln(err)
+	} else if len(tracks) < 1 {
+		log.Fatalln("No tracks found in given date range")
 	}
 	if *dryrun {
 		for _, tr := range tracks {

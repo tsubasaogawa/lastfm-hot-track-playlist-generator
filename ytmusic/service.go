@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -61,7 +62,7 @@ func readSavedToken() (*oauth2.Token, error) {
 
 func generateToken(c *oauth2.Config) (*oauth2.Token, error) {
 	hash := md5.Sum([]byte(time.Now().String()))
-	url := c.AuthCodeURL(string(hash[:]), oauth2.AccessTypeOffline)
+	url := c.AuthCodeURL(hex.EncodeToString(hash[:]), oauth2.AccessTypeOffline)
 	fmt.Printf("Access to the following URL: \n%s\nAuth code is: ", url)
 
 	var s string

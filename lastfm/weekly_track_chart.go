@@ -16,9 +16,9 @@ type WeeklyTrackChart struct {
 	_WeeklyTrackChart `json:"weeklytrackchart,string"`
 }
 
-func GetTracks(user string, auth *Auth, from int64, to int64, max int) ([]Track, error) {
+func GetTracks(user string, apikey string, from int64, to int64, max int) ([]Track, error) {
 	endpoint := fmt.Sprintf("%s?method=user.getweeklytrackchart&user=%s&api_key=%s&format=json&from=%d&to=%d&limit=%d",
-		ENDPOINT_BASE, user, auth.apikey, from, to, max)
+		ENDPOINT_BASE, user, apikey, from, to, max)
 
 	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
