@@ -16,14 +16,9 @@ type WeeklyTrackChart struct {
 	_WeeklyTrackChart `json:"weeklytrackchart,string"`
 }
 
-const ENDPOINT_BASE = "http://ws.audioscrobbler.com/2.0/?method=user.getweeklytrackchart"
-
-func GetTracks(user string, apikey string, from int64, to int64, max int) ([]Track, error) {
-	if apikey == "" {
-		return nil, fmt.Errorf("Last.FM API Key is required")
-	}
-	endpoint := fmt.Sprintf("%s&user=%s&api_key=%s&format=json&from=%d&to=%d&limit=%d",
-		ENDPOINT_BASE, user, apikey, from, to, max)
+func GetTracks(user string, auth *Auth, from int64, to int64, max int) ([]Track, error) {
+	endpoint := fmt.Sprintf("%s?method=user.getweeklytrackchart&user=%s&api_key=%s&format=json&from=%d&to=%d&limit=%d",
+		ENDPOINT_BASE, user, auth.apikey, from, to, max)
 
 	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
