@@ -39,7 +39,8 @@ func main() {
 	secretJsonFile := args[0]
 
 	apikey := os.Getenv("LASTFM_API_KEY")
-	tracks, err := lastfm.GetTracks(
+	var chart lastfm.WeeklyTrackChart
+	err := chart.Fetch(
 		*user,
 		apikey,
 		str2unixtime(*from),
@@ -48,11 +49,11 @@ func main() {
 	)
 	if err != nil {
 		log.Fatalln(err)
-	} else if len(tracks) < 1 {
+	} else if len(chart.Tracks) < 1 {
 		log.Fatalln("No tracks found in given date range")
 	}
 	if *dryrun {
-		for _, tr := range tracks {
+		for _, tr := range chart.Tracks {
 			tr.Print()
 			print("\n")
 		}
@@ -72,7 +73,7 @@ func main() {
 	search := ytmusic.NewSearch(service)
 	search.RegionCode = *region
 	search.MaxTries = *maxSearch
-	for _, track := range tracks {
+	for _, track := range chart.Tracks {
 		track.Print()
 		search.Q = fmt.Sprintf("%s - %s", track.ArtistName, track.Name)
 		searchItem, err := search.Do()
