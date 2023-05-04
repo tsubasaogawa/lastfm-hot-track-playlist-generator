@@ -2,6 +2,12 @@
 
 lfm2ytm generates a YouTube (Music) playlist consisting of hot tracks (i.e., most played songs) in [Last.fm](https://www.last.fm/).
 
+## Features
+
+- Generate a YouTube (Music) playlist automatically based on playcounts in Last.fm
+- Try to search [art tracks](https://support.google.com/youtube/answer/6007071) in YouTube
+- Only print hot tracks in Last.fm running with `--dryrun`
+
 ## Example
 
 ### My Last.fm hot tracks in 11 July 2017 - 18 July 2017
