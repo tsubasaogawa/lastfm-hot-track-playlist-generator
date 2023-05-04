@@ -9,9 +9,9 @@ builds:
     binary: lfm2ytm
     ldflags:
       - -s -w
-      - -X main.VERSION={{.Version}}
-      - -X main.REVISION={{.ShortCommit}}
-      - -X main.LASTFM_API_KEY={{.Env.LASTFM_API_KEY}}
+      - -X VERSION={{.Version}}
+      - -X REVISION={{.ShortCommit}}
+      - -X main.apikey={{.Env.LASTFM_API_KEY}}
     env:
       - CGO_ENABLED=0
     goos:
