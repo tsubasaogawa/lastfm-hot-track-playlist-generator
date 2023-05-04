@@ -1,6 +1,6 @@
 # lfm2ytm: YouTube (Music) playlist generator with Last.fm hot tracks
 
-It generates a playlist consisting of hot tracks in Last.fm.
+lfm2ytm generates a playlist consisting of hot tracks (i.e., most played songs) in Last.fm.
 
 ## Example
 
@@ -11,13 +11,13 @@ It generates a playlist consisting of hot tracks in Last.fm.
 ### Run generator
 
 ```
-$ LASTFM_API_KEY=****** ./lfm2ytm \
-  -user tsubasaogawa \
+$ ./lfm2ytm \
+  -secretjson=./client_secret.json \
   -fromdate=2017-07-11T00:00:00+09:00 \
   -todate=2017-07-18T23:59:59+09:00 \
   -region=JP \
   -lfmmax=10 \
-  ./oauth.json 
+  tsubasaogawa
 ✔ Start A Fire - John Legend - Topic (3 times; id=dwTRnPtpSSk)
 ✔ Herman’s Habit - Justin Hurwitz - Topic (2 times; id=zwiy2EfS0GY)
 ✔ Planetarium - Justin Hurwitz - Topic (2 times; id=qV1KxmGDkk8)
@@ -34,13 +34,30 @@ $ LASTFM_API_KEY=****** ./lfm2ytm \
 
 ![ytmusic](https://user-images.githubusercontent.com/7788821/235303635-479550fd-a866-4816-9252-949cd91da8df.png)
 
-## Install
+## How to use
 
-### 1. Authorize Last.fm
+### 1. Enable YouTube Data API v3
 
-### 2. Authorize YouTube
+https://developers.google.com/youtube/v3/getting-started
+
+### 2. Generate OAuth 2.0 client secret file
+
+https://developers.google.com/youtube/v3/guides/auth/installed-apps
+
+- Choose "Desktop Application"
 
 ### 3. Run
 
+See the example.
+
 ## Options
 
+TBA. See `lfm2ytm --help` or `main()` in [main.go](./main.go)
+
+## Development
+
+1. Fork this repository.
+2. Chdir and `go mod tidy`
+3. Do implements.
+4. Run `LASTFM_API_KEY=<your lastfm api key> go run *.go [options]`
+5. Create a pull-request.
