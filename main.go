@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	VERSION  string
-	REVISION string
+	VERSION        string
+	REVISION       string
+	LASTFM_API_KEY string
 )
 
 func main() {
@@ -40,6 +41,9 @@ func main() {
 	user := args[0]
 
 	apikey := os.Getenv("LASTFM_API_KEY")
+	if apikey == "" {
+		apikey = LASTFM_API_KEY
+	}
 	var chart lastfm.WeeklyTrackChart
 	if err := chart.Fetch(user, apikey, str2unixtime(*from), str2unixtime(*to), *lfmMax); err != nil {
 		log.Fatalln(err)
