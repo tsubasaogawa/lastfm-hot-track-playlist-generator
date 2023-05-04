@@ -1,6 +1,6 @@
 # lfm2ytm: YouTube (Music) playlist generator with Last.fm hot tracks
 
-lfm2ytm generates a playlist consisting of hot tracks (i.e., most played songs) in Last.fm.
+lfm2ytm generates a YouTube (Music) playlist consisting of hot tracks (i.e., most played songs) in [Last.fm](https://www.last.fm/).
 
 ## Example
 
@@ -10,14 +10,19 @@ lfm2ytm generates a playlist consisting of hot tracks (i.e., most played songs) 
 
 ### Run generator
 
-```
-$ ./lfm2ytm \
+```bash
+./lfm2ytm \
   -secretjson=./client_secret.json \
   -fromdate=2017-07-11T00:00:00+09:00 \
   -todate=2017-07-18T23:59:59+09:00 \
   -region=JP \
   -lfmmax=10 \
   tsubasaogawa
+```
+
+Results
+
+```text
 ✔ Start A Fire - John Legend - Topic (3 times; id=dwTRnPtpSSk)
 ✔ Herman’s Habit - Justin Hurwitz - Topic (2 times; id=zwiy2EfS0GY)
 ✔ Planetarium - Justin Hurwitz - Topic (2 times; id=qV1KxmGDkk8)
