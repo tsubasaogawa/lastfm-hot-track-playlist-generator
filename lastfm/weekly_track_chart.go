@@ -34,12 +34,10 @@ func (w *WeeklyTrackChart) Fetch(user string, apikey string, from int64, to int6
 		return err
 	}
 
+	// `#` is an invalid character at json key
 	valid := strings.ReplaceAll(string(invalid), "#text", "text")
 
 	err = json.Unmarshal([]byte(valid), &w)
-	if err != nil {
-		return err
-	}
 
-	return nil
+	return err
 }

@@ -21,8 +21,8 @@ func NewPlaylist(svc *youtube.Service, tt string, desc string, stat string, dup 
 		return nil, fmt.Errorf("PrivacyStatus must be private, public or unlisted")
 	}
 
-	plExists, err := exists(svc, tt, max)
-	if plExists && !dup {
+	_exists, err := exists(svc, tt, max)
+	if _exists && !dup {
 		return nil, fmt.Errorf("Playlist `%s` already exists", tt)
 	} else if err != nil {
 		return nil, err
