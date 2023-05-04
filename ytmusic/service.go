@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 
 	"golang.org/x/oauth2"
@@ -26,41 +27,47 @@ func NewService(oauthfile string) (*youtube.Service, error) {
 		return nil, err
 	}
 
-	config, err := google.ConfigFromJSON(oauth, youtube.YoutubeScope)
+	cfg, err := google.ConfigFromJSON(oauth, youtube.YoutubeScope)
 	if err != nil {
 		return nil, err
 	}
 
-	token, err := readSavedToken()
+	cdir, err := os.UserConfigDir()
 	if err != nil {
-		token, err = generateToken(config)
+		return nil, err
+	}
+	file := filepath.Join(cdir, "lfm2ytm", TOKEN_FILE)
+
+	tok, err := readSavedToken(file)
+	if err != nil {
+		tok, err = generateToken(file, cfg)
 		if err != nil {
 			return nil, err
 		}
-		log.Println("Generated token is saved to " + TOKEN_FILE)
+		log.Println("Saving token file to " + file)
 	}
 
 	ctx := context.Background()
-	client := config.Client(ctx, token)
-	service, err := youtube.New(client)
+	c := cfg.Client(ctx, tok)
+	s, err := youtube.New(c)
 
-	return service, err
+	return s, err
 }
 
-func readSavedToken() (*oauth2.Token, error) {
-	f, err := os.Open(TOKEN_FILE)
+func readSavedToken(file string) (*oauth2.Token, error) {
+	f, err := os.Open(file)
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
 
-	token := oauth2.Token{}
-	err = json.NewDecoder(f).Decode(&token)
+	tok := oauth2.Token{}
+	err = json.NewDecoder(f).Decode(&tok)
 
-	return &token, err
+	return &tok, err
 }
 
-func generateToken(c *oauth2.Config) (*oauth2.Token, error) {
+func generateToken(file string, c *oauth2.Config) (*oauth2.Token, error) {
 	hash := md5.Sum([]byte(time.Now().String()))
 	url := c.AuthCodeURL(hex.EncodeToString(hash[:]), oauth2.AccessTypeOffline)
 	fmt.Printf("Access to the following URL: \n%s\nAuth code is: ", url)
@@ -71,18 +78,23 @@ func generateToken(c *oauth2.Config) (*oauth2.Token, error) {
 		s = sc.Text()
 	}
 
-	token, err := c.Exchange(oauth2.NoContext, s)
+	tok, err := c.Exchange(oauth2.NoContext, s)
 	if err != nil {
 		return nil, err
 	}
 
 	// save
-	f, err := os.OpenFile(TOKEN_FILE, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
+	dir := filepath.Dir(file)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		os.MkdirAll(dir, os.ModePerm)
+	}
+
+	f, err := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
-	err = json.NewEncoder(f).Encode(token)
+	err = json.NewEncoder(f).Encode(tok)
 
-	return token, err
+	return tok, err
 }
