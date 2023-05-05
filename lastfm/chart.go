@@ -14,6 +14,8 @@ type _WeeklyTrackChart struct {
 
 type WeeklyTrackChart struct {
 	_WeeklyTrackChart `json:"weeklytrackchart,string"`
+	Message           string `json:"message"`
+	Error             int    `json:"error,int"`
 }
 
 func (w *WeeklyTrackChart) Fetch(user string, apikey string, from int64, to int64, max int) error {
@@ -37,7 +39,11 @@ func (w *WeeklyTrackChart) Fetch(user string, apikey string, from int64, to int6
 	// `#` is an invalid character at json key
 	valid := strings.ReplaceAll(string(invalid), "#text", "text")
 
-	err = json.Unmarshal([]byte(valid), &w)
+	if err = json.Unmarshal([]byte(valid), &w); err != nil {
+		return err
+	} else if w.Error > 0 {
+		return fmt.Errorf("%s (error code = %d)\n", w.Message, w.Error)
+	}
 
-	return err
+	return nil
 }
