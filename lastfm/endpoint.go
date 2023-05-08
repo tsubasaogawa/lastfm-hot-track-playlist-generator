@@ -1,3 +1,3 @@
 package lastfm
 
-const ENDPOINT_BASE = "https://ws.audioscrobbler.com/2.0/"
+var ENDPOINT_BASE = "https://ws.audioscrobbler.com/2.0/"
