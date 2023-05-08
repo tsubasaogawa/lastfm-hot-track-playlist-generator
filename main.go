@@ -97,7 +97,7 @@ func main() {
 }
 
 func str2unixtime(date string) int64 {
-	parsed, err := time.Parse("2006-01-02T15:04:05Z07:00", date)
+	parsed, err := time.Parse(time.RFC3339, date)
 	if err != nil {
 		log.Fatalln(err)
 	}
