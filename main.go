@@ -55,7 +55,7 @@ func main() {
 	}
 
 	var chart lastfm.WeeklyTrackChart
-	if err := chart.Fetch(user, apikey, str2unixtime(from), str2unixtime(to), lfmMax); err != nil {
+	if err := chart.Fetch(user, apikey, Str2unixtime(from), Str2unixtime(to), lfmMax); err != nil {
 		log.Fatalln(err)
 	} else if len(chart.Tracks) < 1 {
 		log.Fatalln("No tracks found in given date range")
@@ -96,7 +96,7 @@ func main() {
 	}
 }
 
-func str2unixtime(date string) int64 {
+func Str2unixtime(date string) int64 {
 	parsed, err := time.Parse(time.RFC3339, date)
 	if err != nil {
 		log.Fatalln(err)

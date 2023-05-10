@@ -1,8 +1,10 @@
-package main
+package main_test
 
 import (
 	"os"
 	"testing"
+
+	"github.com/tsubasaogawa/lfm2ytm"
 )
 
 func TestMain(m *testing.M) {
@@ -21,7 +23,7 @@ func TestStr2unixtime(t *testing.T) {
 
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			u := str2unixtime(tt.date)
+			u := main.Str2unixtime(tt.date)
 			if tt.expected != u {
 				t.Errorf("Expected: %d, Actual: %d", tt.expected, u)
 			}
