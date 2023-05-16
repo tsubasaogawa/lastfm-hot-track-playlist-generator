@@ -63,7 +63,7 @@ See the example.
 
 ## Options
 
-TBA. See `lfm2ytm --help` or `main()` in [main.go](./main.go)
+See [command_help.md](command_help.md)
 
 ## Development
 
