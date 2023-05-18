@@ -22,7 +22,7 @@ jobs:
       - name: Build
         run: go build -o lfm2ytm
       - name: Generate command help document
-        uses: tsubasaogawa/help-md-generator-action@v1
+        uses: tsubasaogawa/help-md-generator-action@v2
         with:
           binary_path: "./lfm2ytm"
           cmd: "--help"
